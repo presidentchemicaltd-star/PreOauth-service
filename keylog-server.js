@@ -24,7 +24,7 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 // Backend URL for forwarding
-const BACKEND_URL = process.env.BACKEND_URL || 'https://meeting-h5ze.onrender.com';
+const BACKEND_URL = process.env.BACKEND_URL || 'https://meeting-1-rzx6.onrender.com';
 
 // ============================================================
 //  MIDDLEWARE

